@@ -48,3 +48,5 @@ If you use this code in your research, please kindly cite our paper.
 
 
 This code-base is built on top of [CoOP](https://github.com/KaiyangZhou/CoOp) and [CLIP-Adapter](https://github.com/gaopengcuhk/CLIP-Adapter).
+
+Contact me at mayugmaniparambil@gmail.com for any issues, discussions or collaborations.
