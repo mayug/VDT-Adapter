@@ -1,31 +1,11 @@
-# Prompt Learning for Vision-Language Models
+# Enhancing CLIP with GPT-4: Harnessing Visual Descriptions as Prompts
 
-This repo contains the codebase of a series of research projects focused on adapting vision-language models like [CLIP](https://arxiv.org/abs/2103.00020) to downstream datasets via *prompt learning*:
+This repo contains the code as well as auxiliary data for our ICCV-W paper ['Enhancing CLIP with GPT-4: Harnessing Visual Descriptions as Prompts'](https://arxiv.org/abs/2307.11661)
 
-* [Conditional Prompt Learning for Vision-Language Models](https://arxiv.org/abs/2203.05557), in CVPR, 2022.
-* [Learning to Prompt for Vision-Language Models](https://arxiv.org/abs/2109.01134), IJCV, 2022.
 
-## Updates
+The GPT-4 generated dataset is available in the folder gpt4_data as {dataset_name}.pt files. 
 
-- **07.10.2022**: Just added to both [CoOp](https://arxiv.org/abs/2109.01134) and [CoCoOp](https://arxiv.org/abs/2203.05557) (in their appendices) the results on the newly proposed DOSCO (DOmain Shift in COntext) benchmark, which focuses on contextual domain shift and covers a diverse set of classification problems. (The paper about DOSCO is [here](https://arxiv.org/abs/2209.07521) and the code for running CoOp/CoCoOp on DOSCO is [here](https://github.com/KaiyangZhou/on-device-dg).)
 
-- **17.09.2022**: [Call for Papers](https://kaiyangzhou.github.io/assets/cfp_ijcv_lvms.html): IJCV Special Issue on *The Promises and Dangers of Large Vision Models*.
-
-- **16.07.2022**: CoOp has been accepted to IJCV for publication!
-
-- **10.06.2022**: Our latest work, [Neural Prompt Search](https://arxiv.org/abs/2206.04673), has just been released on arxiv. It provides a novel perspective for fine-tuning large vision models like [ViT](https://arxiv.org/abs/2010.11929), so please check it out if you're interested in parameter-efficient fine-tuning/transfer learning. The code is also made public [here](https://github.com/Davidzhangyuanhan/NOAH).
-
-- **08.06.2022**: If you're looking for the code to draw the few-shot performance curves (like the ones we show in the CoOp's paper), see `draw_curves.py`.
-
-- **09.04.2022**: The pre-trained weights of CoOp on ImageNet are released [here](#pre-trained-models).
-
-- **11.03.2022**: The code of our CVPR'22 paper, "[Conditional Prompt Learning for Vision-Language Models](https://arxiv.org/abs/2203.05557)," is released.
-
-- **15.10.2021**: We find that the `best_val` model and the `last_step` model achieve similar performance, so we set `TEST.FINAL_MODEL = "last_step"` for all datasets to save training time. Why we used `best_val`: the ([tiny](https://github.com/KaiyangZhou/CoOp/blob/main/datasets/oxford_pets.py#L32)) validation set was designed for the linear probe approach, which requires extensive tuning for its hyperparameters, so we used the `best_val` model for CoOp as well for fair comparison (in this way, both approaches have access to the validation set).
-
-- **09.10.2021**: Important changes are made to Dassl's transforms.py. Please pull the latest commits from https://github.com/KaiyangZhou/Dassl.pytorch and this repo to make sure the code works properly. In particular, 1) `center_crop` now becomes a default transform in testing (applied after resizing the smaller edge to a certain size to keep the image aspect ratio), and 2) for training, `Resize(cfg.INPUT.SIZE)` is deactivated when `random_crop` or `random_resized_crop` is used. Please read this [issue](https://github.com/KaiyangZhou/CoOp/issues/8) on how these changes might affect the performance.
-
-- **18.09.2021**: We have fixed an error in Dassl which could cause a training data loader to have zero length (so no training will be performed) when the dataset size is smaller than the batch size (due to `drop_last=True`). Please pull the latest commit for Dassl (>= `8eecc3c`). This error led to lower results for CoOp in EuroSAT's 1- and 2-shot settings (others are all correct). We will update the paper on arxiv to fix this error.
 
 ## How to Install
 This code is built on top of the awesome toolbox [Dassl.pytorch](https://github.com/KaiyangZhou/Dassl.pytorch) so you need to install the `dassl` environment first. Simply follow the instructions described [here](https://github.com/KaiyangZhou/Dassl.pytorch#installation) to install `dassl` as well as PyTorch. After that, run `pip install -r requirements.txt` under `CoOp/` to install a few more packages required by [CLIP](https://github.com/openai/CLIP) (this should be done when `dassl` is activated). Then, you are ready to go.
@@ -33,32 +13,38 @@ This code is built on top of the awesome toolbox [Dassl.pytorch](https://github.
 Follow [DATASETS.md](DATASETS.md) to install the datasets.
 
 ## How to Run
-
-Click a paper below to see the detailed instructions on how to run the code to reproduce the results.
-
-* [Learning to Prompt for Vision-Language Models](COOP.md)
-* [Conditional Prompt Learning for Vision-Language Models](COCOOP.md)
-
-## Models and Results
-
-- The pre-trained weights of CoOp (both M=16 & M=4) on ImageNet based on RN50, RN101, ViT-B/16 and ViT-B/32 can be downloaded altogether via this [link](https://drive.google.com/file/d/18ypxfd82RR0pizc5MM1ZWDYDk4j0BtPF/view?usp=sharing). The weights can be used to reproduce the results in Table 1 of CoOp's paper (i.e., the results on ImageNet and its four variants with domain shift). To load the weights and run the evaluation code, you will need to specify `--model-dir` and `--load-epoch` (see this [script](https://github.com/KaiyangZhou/CoOp/blob/main/scripts/eval.sh) for example).
-- The raw numerical results can be found at this [google drive link](https://docs.google.com/spreadsheets/d/12_kaFdD0nct9aUIrDoreY0qDunQ9q9tv/edit?usp=sharing&ouid=100312610418109826457&rtpof=true&sd=true).
-
-## Citation
-If you use this code in your research, please kindly cite the following papers
+For the ZS experiments use the following script.
 
 ```bash
-@inproceedings{zhou2022cocoop,
-    title={Conditional Prompt Learning for Vision-Language Models},
-    author={Zhou, Kaiyang and Yang, Jingkang and Loy, Chen Change and Liu, Ziwei},
-    booktitle={IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    year={2022}
-}
+bash scripts/clip/main_gpt.sh cub vit_b16_c16_ep10_batch1 all zs_gpt_v
+```
+Arguments are dataset_name, encoder_config, class-sampling(base, new or all classes), exp_name.
 
-@article{zhou2022coop,
-    title={Learning to Prompt for Vision-Language Models},
-    author={Zhou, Kaiyang and Yang, Jingkang and Loy, Chen Change and Liu, Ziwei},
-    journal={International Journal of Computer Vision (IJCV)},
-    year={2022}
+For the few-shot experiments use the following script
+
+```bash
+bash scripts/clip_adapter/main_gpt.sh cub vit_b16_c16_ep10_batch1 end 16 16 False base self_attn 0.2 self0.2_b2n_3-5
+```
+
+Arguments are dataset_name, encoder_config, coop1,coop2, n_shot, coop3, class-sampling(base, new or all classes), adapter-type, residual-ratio,  exp_name. Arguments coop1-3 are from older code and not used in clip_adapter_gpt.py
+
+main.sh is the script for running default clip adapter.
+
+Please refer to b2n_adapters.sh for the scripts for all shots and all datasets (with tuned residual ratio) for CLIP-A-self in the base 2 new setting.
+
+Residual ratio has to be tuned for each dataset/shot setting
+
+## Citation
+If you use this code in your research, please kindly cite our paper.
+
+```bash
+@article{maniparambil2023enhancing,
+  title={Enhancing CLIP with GPT-4: Harnessing Visual Descriptions as Prompts},
+  author={Maniparambil, Mayug and Vorster, Chris and Molloy, Derek and Murphy, Noel and McGuinness, Kevin and O'Connor, Noel E},
+  journal={arXiv preprint arXiv:2307.11661},
+  year={2023}
 }
 ```
+
+
+This code-base is built on top of [CoOP](https://github.com/KaiyangZhou/CoOp) and [CLIP-Adapter](https://github.com/gaopengcuhk/CLIP-Adapter).
