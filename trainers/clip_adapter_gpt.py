@@ -231,7 +231,7 @@ class CustomCLIP(nn.Module):
             # now get the text features for all the gpt4 sentences
             for cl in classnames:
                 # need to include code for all datasets, some dont need the folowing line
-                if cfg.DATASET.NAME in ['OxfordFlowers']:
+                if cfg.DATASET.NAME in ['OxfordFlowers', 'StanfordCars', 'EuroSAT']:
                     pass
                 else:
                     cl = '_'.join(cl.split(' '))
